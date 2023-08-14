@@ -183,7 +183,7 @@ class ElasticityProblem(Problem):
             [k[7], k[2], k[1], k[4], k[3], k[6], k[5], k[0]]])
         return KE
 
-    def __init__(self, bc: BoundaryConditions, penalty: float):
+    def __init__(self, bc: BoundaryConditions, penalty: float, Emax: float = 1.0, nu : float = 0.3):
         """
         Create the topology optimization problem.
 
@@ -198,10 +198,10 @@ class ElasticityProblem(Problem):
         super().__init__(bc, penalty)
         # Max and min stiffness
         self.Emin = 1e-9
-        self.Emax = 1.0
+        self.Emax = Emax
 
         # FE: Build the index vectors for the for coo matrix format.
-        self.nu = 0.3
+        self.nu = nu
         self.build_indices()
 
         # BC's and support (half MBB-beam)
