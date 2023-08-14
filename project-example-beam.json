@@ -1,0 +1,70 @@
+{
+  "domain": {
+    "materialProperties": {
+      "elasticity": 0.3,
+      "density": 1,
+      "flow": 0.3
+    },
+    "dimensions": {
+      "width": 120,
+      "height": 60
+    },
+    "volumeFraction": 0.4
+  },
+  "boundaryConditions": {
+    "supports": [
+      {
+        "orientation": 1,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "type": 1
+      },
+      {
+        "orientation": 1,
+        "position": {
+          "x": 0,
+          "y": 60
+        },
+        "type": 1
+      }
+    ],
+    "forces": [
+      {
+        "load": -1,
+        "orientation": 1,
+        "position": {
+          "x": 120,
+          "y": 10
+        }
+      }
+    ],
+    "constantRegions": [
+      {
+        "position": {
+          "x": 50,
+          "y": 0
+        },
+        "dimensions": {
+          "width": 40,
+          "height": 40
+        },
+        "type": 0
+      },
+      {
+        "position": {
+          "x": 0,
+          "y": 30
+        },
+        "dimensions": {
+          "width": 10,
+          "height": 10
+        },
+        "type": 1
+      }
+    ]
+  },
+  "penalization": 5,
+  "filterIndex": 5.4
+}
