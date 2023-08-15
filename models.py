@@ -304,9 +304,20 @@ class CustomBoundaryConditions(bc):
 class Result():
     def __init__(self, x: numpy.ndarray, volume: float, obj: float, finished: bool = False):
         self.densities = x.tolist()
-        self.volume
+        self.volume = volume
         self.obj = obj
         self.finished = finished
+
+    def serialize(self) -> dict():
+        data = dict()
+        data['densities'] = self.densities
+        data['volume'] = self.volume
+        data['objective'] = self.obj
+
+        if self.finished:
+            data['finished'] = self.finished
+
+        return data
 
 
 class GaudiSolver(TopOptSolver):
@@ -324,12 +335,20 @@ class GaudiSolver(TopOptSolver):
 
         return obj
 
-    def get_result(self):
+    def get_result(self) -> Result:
         return self.results.get()
 
     def optimize(self, x: np.ndarray) -> np.ndarray:
         final = super().optimize(x)
 
-        self.results.put(Result(final, final.sum(), ))
+        self.results.put(Result(final, final.sum(), 0, True))
 
         return final
+
+
+class GaudiMockedGUI(GUI):
+    def update(self, xPhys, title=None):
+        pass
+
+    def __init__(self, problem, title=""):
+        pass
