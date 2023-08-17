@@ -144,9 +144,11 @@ class BoundaryConditions:
             forces.append(Force.from_json(raw_force))
 
         constant_regions = []
-        for raw_constant_region in json['constantRegions']:
-            constant_regions.append(
-                ConstantRegion.from_json(raw_constant_region))
+
+        if 'constantRegions' in json:
+            for raw_constant_region in json['constantRegions']:
+                constant_regions.append(
+                    ConstantRegion.from_json(raw_constant_region))
 
         return BoundaryConditions(supports, forces, constant_regions)
 
@@ -280,6 +282,7 @@ class CustomBoundaryConditions(bc):
         return self.get_constant_region(RegionType.MATERIAL)
 
     def get_constant_region(self, region_type: RegionType):
+
         X, Y = None, None
 
         for region in self.boundary_conditions.constant_regions:
@@ -294,6 +297,9 @@ class CustomBoundaryConditions(bc):
             else:
                 X = numpy.append(X.ravel(), X_t.ravel())
                 Y = numpy.append(Y.ravel(), Y_t.ravel())
+
+        if X is None:
+            return numpy.array([])
 
         pairs = numpy.vstack([X.ravel(), Y.ravel()]).T
 
@@ -312,12 +318,12 @@ class Result():
 
     def serialize(self) -> dict():
         data = dict()
-        data['densities'] = self.densities
-        data['volume'] = self.volume
-        data['objective'] = self.obj
-
         if self.finished:
             data['finished'] = self.finished
+
+        data['densities'] = [round(d, 3) for d in self.densities]
+        data['volume'] = self.volume
+        data['objective'] = self.obj
 
         return data
 
@@ -338,7 +344,12 @@ class GaudiSolver(TopOptSolver):
         return obj
 
     def get_result(self) -> Result:
-        return self.results.get()
+        result = self.results.get()
+
+        if self.results.empty():
+            self.results.put(result)
+
+        return result
 
     def optimize(self, x: numpy.ndarray) -> numpy.ndarray:
         final = super().optimize(x)
