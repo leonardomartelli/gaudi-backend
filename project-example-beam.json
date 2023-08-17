@@ -36,35 +36,11 @@
         "orientation": 1,
         "position": {
           "x": 120,
-          "y": 10
-        }
-      }
-    ],
-    "constantRegions": [
-      {
-        "position": {
-          "x": 50,
-          "y": 0
-        },
-        "dimensions": {
-          "width": 40,
-          "height": 40
-        },
-        "type": 0
-      },
-      {
-        "position": {
-          "x": 0,
           "y": 30
-        },
-        "dimensions": {
-          "width": 10,
-          "height": 10
-        },
-        "type": 1
+        }
       }
     ]
   },
-  "penalization": 5,
+  "penalization": 3,
   "filterIndex": 5.4
 }
