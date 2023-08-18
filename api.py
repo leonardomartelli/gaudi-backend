@@ -1,18 +1,18 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api
-from models import Project, Optimization
-import threading
+from models import Project
+from services import OptimizationService
 
 app = Flask(__name__)
 api = Api(app)
 
-optimizations = {}
+service = OptimizationService()
 
 
 @app.route('/result', methods=['GET'])
 def get_result():
     optimization_id = request.args.get('id', type=str)
-    result = optimizations[optimization_id].get_result().serialize()
+    result = service.get_result(optimization_id).serialize()
 
     return jsonify(result)
 
@@ -20,13 +20,19 @@ def get_result():
 @app.route('/optimize', methods=['POST'])
 def optimize():
     project = Project.from_json(request.json['project'])
-    optimization = Optimization(project)
-    optimizations[optimization.identifier] = optimization
 
-    thread = threading.Thread(target=optimization.optimize)
-    thread.start()
+    identifier = service.start_optimization(project)
 
-    return optimization.identifier
+    return identifier
+
+
+@app.route('/optimization', methods=['DELETE'])
+def get_result():
+    optimization_id = request.args.get('id', type=str)
+
+    service.end_optimization(optimization_id)
+
+    return optimization_id
 
 
 if __name__ == '__main__':
