@@ -88,29 +88,27 @@ class Force:
 
 
 class Support:
-    orientation: int
     position: Position
     type: SupportType
-    size: Optional[int]
+    dimensions: Optional[Dimensions]
 
-    def __init__(self, orientation: int, position: Position, type: SupportType, size: Optional[int] = 0) -> None:
-        self.orientation = orientation
+    def __init__(self, position: Position, type: SupportType, dimensions: Optional[Dimensions] = None) -> None:
+
         self.position = position
         self.type = type
-        self.size = size
+        self.dimensions = dimensions
 
     def from_json(json: dict):
-        orientation = json['orientation']
         position = Position.from_json(json['position'])
 
-        if 'size' in json:
-            size = json['size']
+        if 'dimensions' in json:
+            dimensions = json['dimensions']
         else:
-            size = 0
+            dimensions = None
 
         type = json['type']
 
-        return Support(orientation, position, type, size)
+        return Support(position, type, dimensions)
 
 
 class BoundaryConditions:

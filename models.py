@@ -24,24 +24,26 @@ class CustomBoundaryConditions(bc):
         fixed = None
 
         for support in self.boundary_conditions.supports:
-            if support.size > 0:
-                if support.orientation == 0:
-                    func = numpy.vectorize(lambda x: xy_to_id(
-                        x, support.position.y, self.nelx, self.nely))
-                    begin = support.position.x
-                else:
-                    func = numpy.vectorize(lambda y: xy_to_id(
-                        support.position.x, y, self.nelx, self.nely))
-                    begin = support.position.y
+            # if support.dimensions is not None:
 
-                ids = 2 * func(range(begin, begin + support.size))
+            # add support for multidimensional supports
+            # if support.orientation == 0:
+            #     func = numpy.vectorize(lambda x: xy_to_id(
+            #         x, support.position.y, self.nelx, self.nely))
+            #     begin = support.position.x
+            # else:
+            #     func = numpy.vectorize(lambda y: xy_to_id(
+            #         support.position.x, y, self.nelx, self.nely))
+            #     begin = support.position.y
 
-                supp_points = numpy.union1d(ids, ids + 1)
-            else:
-                index = 2 * xy_to_id(support.position.x,
-                                     support.position.y, self.nelx, self.nely)
+            # ids = 2 * func(range(begin, begin + support.d))
 
-                supp_points = numpy.arange(index, index+1 + support.type)
+            # supp_points = numpy.union1d(ids, ids + 1)
+            # else:
+            index = 2 * xy_to_id(support.position.x,
+                                 support.position.y, self.nelx, self.nely)
+
+            supp_points = numpy.arange(index, index+1 + support.type)
 
             if fixed is not None:
                 fixed = numpy.union1d(fixed, supp_points)
