@@ -10,8 +10,8 @@ api = Api(app)
 service = OptimizationService()
 
 
-@cross_origin()
 @app.route('/result', methods=['GET'])
+@cross_origin()
 def get_result():
     optimization_id = request.args.get('id', type=str)
     result = service.get_result(optimization_id).serialize()
@@ -19,8 +19,8 @@ def get_result():
     return jsonify(result)
 
 
-@cross_origin()
 @app.route('/optimize', methods=['POST'])
+@cross_origin()
 def optimize():
     project = Project.from_json(request.json['project'])
 
