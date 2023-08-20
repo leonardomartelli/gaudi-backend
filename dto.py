@@ -205,7 +205,7 @@ class Result():
         if self.finished:
             data['finished'] = self.finished
 
-        data['densities'] = [round(d, 3) for d in self.densities]
+        data['densities'] = [round(d, 5) for d in self.densities]
         data['volume'] = self.volume
         data['objective'] = self.obj
 
