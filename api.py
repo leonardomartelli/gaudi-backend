@@ -29,5 +29,15 @@ def optimize():
     return identifier
 
 
+@app.route('/optimization', methods=['DELETE'])
+@cross_origin()
+def delete_optimization():
+    optimization_id = request.args.get('id', type=str)
+
+    service.end_optimization(optimization_id)
+
+    return optimization_id
+
+
 if __name__ == '__main__':
     app.run()

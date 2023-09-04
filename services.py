@@ -29,6 +29,8 @@ class OptimizationService():
         return result
 
     def end_optimization(self, identifier: str) -> None:
+        self.optimizations.pop(identifier)
+
         thread = self.threads[identifier]
 
         thread.join()

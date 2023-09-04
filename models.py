@@ -123,14 +123,15 @@ class GaudiSolver(TopOptSolver):
     def __init__(self, problem: Problem, volfrac: float, filter: Filter, gui: GUI, maxeval=2000, ftol_rel=0.001):
         super().__init__(problem, volfrac, filter, gui, maxeval, ftol_rel)
         self.results = SimpleQueue()
+        self.last_result: Result = None
 
     def objective_function(self, x: numpy.ndarray, dobj: numpy.ndarray) -> float:
-
         obj = super().objective_function(x, dobj)
 
         result = Result(x, x.sum(), obj)
 
         self.results.put(result)
+        self.last_result = result
 
         return obj
 
@@ -145,7 +146,8 @@ class GaudiSolver(TopOptSolver):
     def optimize(self, x: numpy.ndarray) -> numpy.ndarray:
         final = super().optimize(x)
 
-        self.results.put(Result(final, final.sum(), 0, True))
+        self.results.put(
+            Result(final, self.last_result.volume, self.last_result.obj, True))
 
         return final
 
