@@ -99,8 +99,8 @@ class CustomBoundaryConditions(bc):
             if region.type != region_type:
                 continue
 
-            X_t, Y_t = numpy.mgrid[region.position.x: region.position.x + region.dimensions.width + 1,
-                                   region.position.y: region.position.y + region.dimensions.height + 1]
+            X_t, Y_t = numpy.mgrid[region.position.x: region.position.x + region.dimensions.width,
+                                   region.position.y: region.position.y + region.dimensions.height]
 
             if X is None:
                 X, Y = X_t.ravel(), Y_t.ravel()
@@ -183,8 +183,7 @@ class Optimization:
         return self.solver.get_result()
 
     def optimize(self):
-        x = self.project.domain.volume_fraction * \
-            numpy.ones(self.project.domain.dimensions.width *
+        x = numpy.ones(self.project.domain.dimensions.width *
                        self.project.domain.dimensions.height, dtype=float)
 
         self.solver.optimize(x)

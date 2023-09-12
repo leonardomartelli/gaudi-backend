@@ -24,7 +24,7 @@
       {
         "orientation": 1,
         "position": {
-          "x": 55,
+          "x": 60,
           "y": 0
         },
         "type": 1
@@ -42,7 +42,7 @@
     ],
     "constantRegions": [
       {
-        "position": { "x": 59, "y": 0 },
+        "position": { "x": 60, "y": 0 },
         "dimensions": { "width": 60, "height": 60 },
         "type": 0
       }
