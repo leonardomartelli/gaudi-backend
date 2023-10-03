@@ -2,8 +2,7 @@
   "domain": {
     "materialProperties": {
       "elasticity": 0.3,
-      "density": 1,
-      "flow": 0.3
+      "density": 1
     },
     "dimensions": {
       "width": 120,

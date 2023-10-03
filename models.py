@@ -183,7 +183,9 @@ class Optimization:
         return self.solver.get_result()
 
     def optimize(self):
-        x = numpy.ones(self.project.domain.dimensions.width *
-                       self.project.domain.dimensions.height, dtype=float)
+        x = numpy.full(shape=self.project.domain.dimensions.width *
+                       self.project.domain.dimensions.height,
+                       fill_value=self.project.domain.material_properties.density,
+                       dtype=float)
 
         self.solver.optimize(x)

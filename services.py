@@ -24,13 +24,18 @@ class OptimizationService():
         return optimization.identifier
 
     def get_result(self, identifier: str) -> Result:
-        result = self.optimizations[identifier].get_result()
+
+        if identifier in self.optimizations:
+            result = self.optimizations[identifier].get_result()
+        else:
+            result = None
 
         return result
 
     def end_optimization(self, identifier: str) -> None:
-        self.optimizations.pop(identifier)
+        if identifier in self.optimizations:
+            self.optimizations.pop(identifier)
 
-        thread = self.threads[identifier]
+            thread = self.threads[identifier]
 
-        thread.join()
+            thread.join()
