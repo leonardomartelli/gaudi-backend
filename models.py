@@ -24,26 +24,27 @@ class CustomBoundaryConditions(bc):
         fixed = None
 
         for support in self.boundary_conditions.supports:
-            # if support.dimensions is not None:
+            if support.dimensions is not None and support.dimensions.width + support.dimensions.height > 0:
+                supp_points = None
+                # add support for multidimensional supports
+                for i in range(support.dimensions.width):
+                    func = numpy.vectorize(lambda y: xy_to_id(
+                        support.position.x + i, y, self.nelx, self.nely))
+                    begin = support.position.y
 
-            # add support for multidimensional supports
-            # if support.orientation == 0:
-            #     func = numpy.vectorize(lambda x: xy_to_id(
-            #         x, support.position.y, self.nelx, self.nely))
-            #     begin = support.position.x
-            # else:
-            #     func = numpy.vectorize(lambda y: xy_to_id(
-            #         support.position.x, y, self.nelx, self.nely))
-            #     begin = support.position.y
+                    ids = 2 * func(range(begin, begin +
+                                   support.dimensions.height + 1))
 
-            # ids = 2 * func(range(begin, begin + support.d))
+                    if supp_points is not None:
+                        supp_points = numpy.union1d(supp_points, ids)
+                    else:
+                        supp_points = ids
 
-            # supp_points = numpy.union1d(ids, ids + 1)
-            # else:
-            index = 2 * xy_to_id(support.position.x,
-                                 support.position.y, self.nelx, self.nely)
+            else:
+                index = 2 * xy_to_id(support.position.x,
+                                     support.position.y, self.nelx, self.nely)
 
-            supp_points = numpy.arange(index, index+1 + support.type)
+                supp_points = [index+1]
 
             if fixed is not None:
                 fixed = numpy.union1d(fixed, supp_points)
@@ -77,7 +78,7 @@ class CustomBoundaryConditions(bc):
             else:
                 index = 2 * xy_to_id(force.position.x,
                                      force.position.y, self.nelx, self.nely) + force.orientation
-                ids = numpy.arange(index, index + 1)
+                ids = [index]
 
             f[ids, i] = force.load
 

@@ -102,7 +102,7 @@ class Support:
         position = Position.from_json(json['position'])
 
         if 'dimensions' in json:
-            dimensions = json['dimensions']
+            dimensions = Dimensions.from_json(json['dimensions'])
         else:
             dimensions = None
 
@@ -143,15 +143,13 @@ class BoundaryConditions:
 class MaterialProperties:
     elasticity: float
     density: float
-    flow: float
 
-    def __init__(self, elasticity: float, density: float, flow: float) -> None:
+    def __init__(self, elasticity: float, density: float) -> None:
         self.elasticity = elasticity
         self.density = density
-        self.flow = flow
 
     def from_json(json: dict):
-        return MaterialProperties(json['elasticity'], json['density'], json['flow'])
+        return MaterialProperties(json['elasticity'], json['density'])
 
 
 class Domain:
