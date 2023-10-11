@@ -35,6 +35,9 @@ class CustomBoundaryConditions(bc):
                     ids = 2 * func(range(begin, begin +
                                    support.dimensions.height + 1))
 
+                    if support.type == 1:
+                        ids = [ids, ids + 1]
+
                     if supp_points is not None:
                         supp_points = numpy.union1d(supp_points, ids)
                     else:
@@ -42,9 +45,12 @@ class CustomBoundaryConditions(bc):
 
             else:
                 index = 2 * xy_to_id(support.position.x,
-                                     support.position.y, self.nelx, self.nely)
+                                     support.position.y, self.nelx, self.nely) + 1
 
-                supp_points = numpy.arange(index, index+1 + support.type)
+                if support.type == 1:
+                    supp_points = [index, index + 1]
+                else:
+                    supp_points = [index]
 
             if fixed is not None:
                 fixed = numpy.union1d(fixed, supp_points)
