@@ -13,20 +13,13 @@
   "boundaryConditions": {
     "supports": [
       {
-        "orientation": 1,
         "position": {
           "x": 0,
           "y": 0
         },
-        "type": 1
-      },
-      {
-        "orientation": 1,
-        "position": {
-          "x": 0,
-          "y": 60
-        },
-        "type": 1
+        "type": 1,
+        "id": 0,
+        "dimensions": { "width": 1, "height": 60 }
       }
     ],
     "forces": [
@@ -36,7 +29,8 @@
         "position": {
           "x": 120,
           "y": 30
-        }
+        },
+        "id": 0
       }
     ]
   },

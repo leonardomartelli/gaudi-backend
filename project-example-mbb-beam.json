@@ -2,8 +2,7 @@
   "domain": {
     "materialProperties": {
       "elasticity": 0.3,
-      "density": 1,
-      "flow": 0.3
+      "density": 1
     },
     "dimensions": {
       "width": 120,
@@ -14,20 +13,24 @@
   "boundaryConditions": {
     "supports": [
       {
-        "orientation": 1,
         "position": {
           "x": 0,
-          "y": 40
+          "y": 0
         },
-        "type": 1
+        "type": 0,
+        "dimensions": {
+          "width": 1,
+          "height": 40
+        },
+        "id": 0
       },
       {
-        "orientation": 1,
         "position": {
           "x": 120,
           "y": 40
         },
-        "type": 1
+        "type": 0,
+        "id": 1
       }
     ],
     "forces": [
@@ -35,22 +38,10 @@
         "load": -1,
         "orientation": 1,
         "position": {
-          "x": 25,
-          "y": 0
-        }
-      }
-    ],
-    "constantRegions": [
-      {
-        "position": {
           "x": 0,
-          "y": 60
+          "y": 0
         },
-        "dimensions": {
-          "width": 600,
-          "height": 120
-        },
-        "type": 1
+        "id": 0
       }
     ]
   },
