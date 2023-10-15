@@ -27,6 +27,9 @@ class Dimensions:
 
         return Dimensions(width, height)
 
+    def is_valid(self):
+        return self.width >= 1 and self.height >= 1
+
 
 class Position:
     x: int
@@ -41,6 +44,9 @@ class Position:
         y = json['y']
 
         return Position(x, y)
+
+    def is_valid(self, max_width: int, max_height: int):
+        return self.x >= 0 and self.x <= max_width and self.y >= 0 and self. y <= max_height
 
 
 class ConstantRegion:
@@ -59,6 +65,9 @@ class ConstantRegion:
         type = RegionType(json['type'])
 
         return ConstantRegion(position, dimensions, type)
+
+    def is_valid(self, max_width, max_height):
+        return self.dimensions.is_valid() and self.position.is_valid(max_width, max_height) and (self.type == 0 or self.type == 1)
 
 
 class Force:
@@ -86,6 +95,9 @@ class Force:
 
         return Force(load, orientation, position, size)
 
+    def is_valid(self, max_width, max_height):
+        return self.load != 0 and self.position.is_valid(max_width, max_height) and (self.orientation == 0 or self.orientation == 1)
+
 
 class Support:
     position: Position
@@ -93,7 +105,6 @@ class Support:
     dimensions: Optional[Dimensions]
 
     def __init__(self, position: Position, type: SupportType, dimensions: Optional[Dimensions] = None) -> None:
-
         self.position = position
         self.type = type
         self.dimensions = dimensions
@@ -109,6 +120,9 @@ class Support:
         type = json['type']
 
         return Support(position, type, dimensions)
+
+    def is_valid(self, max_width, max_height):
+        return self.position.is_valid(max_width, max_height) and (self.type == 0 or self.type == 1)
 
 
 class BoundaryConditions:
@@ -139,6 +153,41 @@ class BoundaryConditions:
 
         return BoundaryConditions(supports, forces, constant_regions)
 
+    def is_valid(self, dimensions):
+        return self.supports_are_valid(dimensions) and self.forces_are_valid(dimensions) and self.constant_regions_are_valid(dimensions)
+
+    def supports_are_valid(self, dimensions: Dimensions):
+
+        if len(self.supports) < 1:
+            return False
+
+        for support in self.supports:
+            dimensions_is_valid = support.dimensions.is_valid()
+
+            if (not dimensions_is_valid and len(self.supports) == 1) or not support.is_valid(dimensions.width, dimensions.height):
+                return False
+
+        return True
+
+    def forces_are_valid(self, dimensions: Dimensions):
+
+        if len(self.forces) < 1:
+            return False
+
+        for force in self.forces:
+            if not force.is_valid(dimensions.width, dimensions.height):
+                return False
+
+        return True
+
+    def constant_regions_are_valid(self, dimensions: Dimensions):
+        for constant_region in self.constant_regions:
+
+            if not constant_region.is_valid(dimensions.width, dimensions.height):
+                return False
+
+        return True
+
 
 class MaterialProperties:
     elasticity: float
@@ -150,6 +199,9 @@ class MaterialProperties:
 
     def from_json(json: dict):
         return MaterialProperties(json['elasticity'], json['density'])
+
+    def is_valid(self):
+        return self.density > 0.8 and self.elasticity < 1
 
 
 class Domain:
@@ -168,6 +220,9 @@ class Domain:
         vc = json['volumeFraction']
 
         return Domain(mp, dimensions, vc)
+
+    def is_valid(self):
+        return self.material_properties.is_valid() and self.volume_fraction > 0 and self.dimensions.is_valid()
 
 
 class Project:
@@ -189,6 +244,9 @@ class Project:
         filter_index = float(json['filterIndex'])
 
         return Project(domain, bc, penalization, filter_index)
+
+    def is_valid(self):
+        return self.penalization > 1 and self.filter_index > 1 and self.domain.is_valid() and self.boundary_conditions.is_valid(self.domain.dimensions)
 
 
 class Result():

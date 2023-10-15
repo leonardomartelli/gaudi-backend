@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_restful import Api
+from flask_restful import Api, NotFound
 from models import Project
 from services import OptimizationService
 from flask_cors import cross_origin
@@ -14,15 +14,23 @@ service = OptimizationService()
 @cross_origin()
 def get_result():
     optimization_id = request.args.get('id', type=str)
-    result = service.get_result(optimization_id).serialize()
+    result = service.get_result(optimization_id)
 
-    return jsonify(result)
+    if result is None:
+        raise NotFound
+
+    serialized = result.serialize()
+
+    return jsonify(serialized)
 
 
 @app.route('/optimize', methods=['POST'])
 @cross_origin()
 def optimize():
     project = Project.from_json(request.json['project'])
+
+    if not project.is_valid():
+        return ''
 
     identifier = service.start_optimization(project)
 

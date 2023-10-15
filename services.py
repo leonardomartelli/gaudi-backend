@@ -24,11 +24,10 @@ class OptimizationService():
         return optimization.identifier
 
     def get_result(self, identifier: str) -> Result:
+        result = None
 
         if identifier in self.optimizations:
             result = self.optimizations[identifier].get_result()
-        else:
-            result = None
 
         return result
 
