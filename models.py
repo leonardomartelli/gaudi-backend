@@ -179,7 +179,7 @@ class Optimization:
         self.gui = GaudiMockedGUI(self.problem, None)
 
         self.topopt_filter = DensityBasedFilter(
-            self.project.domain.dimensions.width, self.project.domain.dimensions.height, project.filter_index)
+            self.project.domain.dimensions.width, self.project.domain.dimensions.height, project.filter_radius)
 
         self.solver = GaudiSolver(
             self.problem, self.project.domain.volume_fraction, self.topopt_filter, self.gui)

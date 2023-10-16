@@ -201,7 +201,7 @@ class MaterialProperties:
         return MaterialProperties(json['elasticity'], json['density'])
 
     def is_valid(self):
-        return self.density > 0.8 and self.elasticity < 1
+        return self.elasticity < 1
 
 
 class Domain:
@@ -229,24 +229,24 @@ class Project:
     domain: Domain
     boundary_conditions: BoundaryConditions
     penalization: float
-    filter_index: float
+    filter_radius: float
 
-    def __init__(self, domain: Domain, boundary_conditions: BoundaryConditions, penalization: float = 3.0, filter_index: float = 1.4) -> None:
+    def __init__(self, domain: Domain, boundary_conditions: BoundaryConditions, penalization: float = 3.0, filter_radius: float = 1.4) -> None:
         self.domain = domain
         self.boundary_conditions = boundary_conditions
         self.penalization = penalization
-        self.filter_index = filter_index
+        self.filter_radius = filter_radius
 
     def from_json(json: dict):
         domain = Domain.from_json(json['domain'])
         bc = BoundaryConditions.from_json(json['boundaryConditions'])
         penalization = float(json['penalization'])
-        filter_index = float(json['filterIndex'])
+        filter_radius = float(json['filterRadius'])
 
-        return Project(domain, bc, penalization, filter_index)
+        return Project(domain, bc, penalization, filter_radius)
 
     def is_valid(self):
-        return self.penalization > 1 and self.filter_index > 1 and self.domain.is_valid() and self.boundary_conditions.is_valid(self.domain.dimensions)
+        return self.penalization > 1 and self.filter_radius > 1 and self.domain.is_valid() and self.boundary_conditions.is_valid(self.domain.dimensions)
 
 
 class Result():

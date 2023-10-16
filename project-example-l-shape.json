@@ -43,5 +43,5 @@
     ]
   },
   "penalization": 3,
-  "filterIndex": 5.4
+  "filterRadius": 5.4
 }
