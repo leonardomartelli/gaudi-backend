@@ -164,7 +164,7 @@ class BoundaryConditions:
         for support in self.supports:
             dimensions_is_valid = support.dimensions.is_valid()
 
-            if (not dimensions_is_valid and len(self.supports) == 1) or not support.is_valid(dimensions.width, dimensions.height):
+            if ((not dimensions_is_valid or support.type == 0) and len(self.supports) == 1) or not support.is_valid(dimensions.width, dimensions.height):
                 return False
 
         return True
