@@ -201,7 +201,7 @@ class MaterialProperties:
         return MaterialProperties(json['elasticity'], json['density'])
 
     def is_valid(self):
-        return self.elasticity < 1
+        return self.elasticity < 1 and self.density <= 1
 
 
 class Domain:
