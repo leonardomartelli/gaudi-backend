@@ -162,7 +162,7 @@ class BoundaryConditions:
             return False
 
         for support in self.supports:
-            dimensions_is_valid = support.dimensions.is_valid()
+            dimensions_is_valid = support.dimensions is not None and support.dimensions.is_valid()
 
             if ((not dimensions_is_valid or support.type == 0) and len(self.supports) == 1) or not support.is_valid(dimensions.width, dimensions.height):
                 return False
