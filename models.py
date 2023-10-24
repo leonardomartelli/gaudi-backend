@@ -35,7 +35,7 @@ class CustomBoundaryConditions(bc):
                     ids = 2 * func(range(begin, begin +
                                    support.dimensions.height + 1))
 
-                    if support.type == 1:
+                    if support.type == SupportType.FIXED:
                         ids = [ids, ids + 1]
 
                     if supp_points is not None:
@@ -44,10 +44,10 @@ class CustomBoundaryConditions(bc):
                         supp_points = ids
 
             else:
-                index = 2 * xy_to_id(support.position.x,
-                                     support.position.y, self.nelx, self.nely) + 1
+                index = 2 * xy_to_id(support.position.x - 1,
+                                     support.position.y - 1, self.nelx, self.nely) + 1
 
-                if support.type == 1:
+                if support.type == SupportType.FIXED:
                     supp_points = [index, index + 1]
                 else:
                     supp_points = [index]

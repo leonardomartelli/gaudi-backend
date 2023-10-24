@@ -66,8 +66,17 @@ class ConstantRegion:
 
         return ConstantRegion(position, dimensions, type)
 
-    def is_valid(self, max_width, max_height):
-        return self.dimensions.is_valid() and self.position.is_valid(max_width, max_height) and (self.type == 0 or self.type == 1)
+    def validate(self, max_width, max_height, validations: List[str]):
+        if not self.dimensions.is_valid():
+            validations.append(
+                f'Região constante com dimensão inválida: Largura = {self.dimensions.width} Altura = {self.dimensions.height}')
+
+        if not self.position.is_valid(max_width, max_height):
+            validations.append(
+                f'Região constante com posição inválida: X = {self.position.x} Y = {self.position.y}')
+
+        if not (self.type == RegionType.MATERIAL or self.type == RegionType.VOID):
+            validations.append('Região constante com tipo inválido')
 
 
 class Force:
@@ -95,8 +104,16 @@ class Force:
 
         return Force(load, orientation, position, size)
 
-    def is_valid(self, max_width, max_height):
-        return self.load != 0 and self.position.is_valid(max_width, max_height) and (self.orientation == 0 or self.orientation == 1)
+    def validate(self, max_width, max_height, validations: List[str]):
+        if self.load == 0:
+            validations.append('Força com carga igual a zero')
+
+        if not self.position.is_valid(max_width, max_height):
+            validations.append(
+                f'Força com posição inválida: X = {self.position.x} Y = {self.position.y}')
+
+        if not (self.orientation == 0 or self.orientation == 1):
+            validations.append('Força com orientação inválida')
 
 
 class Support:
@@ -119,10 +136,15 @@ class Support:
 
         type = json['type']
 
-        return Support(position, type, dimensions)
+        return Support(position, SupportType(type), dimensions)
 
-    def is_valid(self, max_width, max_height):
-        return self.position.is_valid(max_width, max_height) and (self.type == 0 or self.type == 1)
+    def validate(self, max_width, max_height, validations: List[str]):
+        if not self.position.is_valid(max_width, max_height):
+            validations.append(
+                f'Suporte com posição inválida: X = {self.position.x} Y = {self.position.y}')
+
+        if not (self.type == SupportType.MOBILE or self.type == SupportType.FIXED):
+            validations.append('Suporte com tipo inválido')
 
 
 class BoundaryConditions:
@@ -153,40 +175,61 @@ class BoundaryConditions:
 
         return BoundaryConditions(supports, forces, constant_regions)
 
-    def is_valid(self, dimensions):
-        return self.supports_are_valid(dimensions) and self.forces_are_valid(dimensions) and self.constant_regions_are_valid(dimensions)
+    def validate(self, dimensions, validations: List[str]):
+        self.validate_supports(dimensions, validations)
+        self.validate_forces(dimensions, validations)
+        self.validate_constant_regions(dimensions, validations)
 
-    def supports_are_valid(self, dimensions: Dimensions):
+    def validate_supports(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.supports) < 1:
-            return False
+            validations.append('O projeto deve ter no minímo um suporte')
+            return
 
-        for support in self.supports:
+        if all([support.type == SupportType.MOBILE for support in self.supports]) and \
+                all([support.dimensions is None or not support.dimensions.is_valid() for support in self.supports]):
+            validations.append(
+                'O projeto deve ter no minímo um suporte móvel com dimensões')
+            return
+
+        if len(self.supports) == 1:
+            support = self.supports[0]
             dimensions_is_valid = support.dimensions is not None and support.dimensions.is_valid()
 
-            if ((not dimensions_is_valid or support.type == 0) and len(self.supports) == 1) or not support.is_valid(dimensions.width, dimensions.height):
-                return False
+            if not dimensions_is_valid:
+                validations.append(
+                    'O projeto deve ter no minímo um suporte fixo com dimensões, ou dois ou mais suportes fixos')
+                return
 
-        return True
+        elif len(self.supports) == 2:
+            support_one = self.supports[0]
+            support_two = self.supports[1]
 
-    def forces_are_valid(self, dimensions: Dimensions):
+            if support_one.type != support_two.type:
+                support_one_dimension_is_valid = support_one.dimensions is not None and support_one.dimensions.is_valid()
+                support_two_dimension_is_valid = support_two.dimensions is not None and support_two.dimensions.is_valid()
+
+                if not (support_one_dimension_is_valid or support_two_dimension_is_valid):
+                    validations.append(
+                        'O projeto não deve ter dois suportes de tipos diferentes, sem dimensões')
+                    return
+
+        for support in self.supports:
+            support.validate(dimensions.width, dimensions.height, validations)
+
+    def validate_forces(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.forces) < 1:
-            return False
+            validations.append('O projeto deve ter no minímo uma carga')
+            return
 
         for force in self.forces:
-            if not force.is_valid(dimensions.width, dimensions.height):
-                return False
+            force.validate(dimensions.width, dimensions.height, validations)
 
-        return True
-
-    def constant_regions_are_valid(self, dimensions: Dimensions):
+    def validate_constant_regions(self, dimensions: Dimensions, validations: List[str]):
         for constant_region in self.constant_regions:
-
-            if not constant_region.is_valid(dimensions.width, dimensions.height):
-                return False
-
-        return True
+            constant_region.validate(
+                dimensions.width, dimensions.height, validations)
 
 
 class MaterialProperties:
@@ -200,8 +243,14 @@ class MaterialProperties:
     def from_json(json: dict):
         return MaterialProperties(json['elasticity'], json['density'])
 
-    def is_valid(self):
-        return self.elasticity < 1 and self.density <= 1
+    def validate(self, validations: List[str]):
+        if self.elasticity >= 1:
+            validations.append(
+                'A elasticidade do material deve ser menor que 1')
+
+        if self.density > 1:
+            validations.append(
+                'A densidade do material deve ser menor ou igual a 1')
 
 
 class Domain:
@@ -221,8 +270,16 @@ class Domain:
 
         return Domain(mp, dimensions, vc)
 
-    def is_valid(self):
-        return self.material_properties.is_valid() and self.volume_fraction > 0 and self.dimensions.is_valid()
+    def validate(self, validations: List[str]):
+        self.material_properties.validate(validations)
+
+        if self.volume_fraction <= 0:
+            validations.append(
+                'A fração de volume deve ser maior que zero')
+
+        if not self.dimensions.is_valid():
+            validations.append(
+                f'Domínio com dimensão inválida: Largura = {self.dimensions.width} Altura = {self.dimensions.height}')
 
 
 class Project:
@@ -245,8 +302,18 @@ class Project:
 
         return Project(domain, bc, penalization, filter_radius)
 
-    def is_valid(self):
-        return self.penalization > 1 and self.filter_radius > 1 and self.domain.is_valid() and self.boundary_conditions.is_valid(self.domain.dimensions)
+    def validate(self, validations: List[str]):
+        if self.penalization <= 1:
+            validations.append(
+                'A penalização deve ser maior que 1')
+
+        if self.filter_radius <= 1:
+            validations.append(
+                'O raio de filtragem deve ser maior que 1')
+
+        self.domain.validate(validations)
+
+        self.boundary_conditions.validate(self.domain.dimensions, validations)
 
 
 class Result():
@@ -264,5 +331,22 @@ class Result():
         data['densities'] = [round(d, 5) for d in self.densities]
         data['volume'] = self.volume
         data['objective'] = self.obj
+
+        return data
+
+
+class ValidationResult():
+    def __init__(self, optimization_id: str = None, validation_results: List[str] = None):
+        self.optimization_id = optimization_id
+        self.validation_results = validation_results
+
+    def serialize(self) -> dict():
+        data = dict()
+
+        if self.optimization_id is not None:
+            data['optimizationId'] = self.optimization_id
+
+        if self.validation_results is not None:
+            data['validationResults'] = self.validation_results
 
         return data

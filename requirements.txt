@@ -7,3 +7,4 @@ flask
 flask-jsonpify
 flask-restful
 flask-cors
+flask-api

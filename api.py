@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
+from werkzeug.exceptions import BadRequest
 from flask_restful import Api, NotFound
+from dto import ValidationResult
 from models import Project
 from services import OptimizationService
 from flask_cors import cross_origin
@@ -29,12 +31,15 @@ def get_result():
 def optimize():
     project = Project.from_json(request.json['project'])
 
-    if not project.is_valid():
-        return ''
+    validations = []
+    project.validate(validations)
+
+    if len(validations) > 0:
+        return invalid_project(validations)
 
     identifier = service.start_optimization(project)
 
-    return identifier
+    return jsonify(ValidationResult(identifier).serialize())
 
 
 @app.route('/optimization', methods=['DELETE'])
@@ -45,6 +50,11 @@ def delete_optimization():
     service.end_optimization(optimization_id)
 
     return optimization_id
+
+
+@app.errorhandler(BadRequest)
+def invalid_project(validations):
+    return jsonify(ValidationResult(validation_results=validations).serialize()), 400
 
 
 if __name__ == '__main__':
