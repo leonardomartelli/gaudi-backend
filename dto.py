@@ -183,13 +183,13 @@ class BoundaryConditions:
     def validate_supports(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.supports) < 1:
-            validations.append('O projeto deve ter no minímo um suporte')
+            validations.append('O projeto deve ter no mínimo um suporte')
             return
 
         if all([support.type == SupportType.MOBILE for support in self.supports]) and \
                 all([support.dimensions is None or not support.dimensions.is_valid() for support in self.supports]):
             validations.append(
-                'O projeto deve ter no minímo um suporte móvel com dimensões')
+                'O projeto deve ter no mínimo um suporte móvel com dimensões')
             return
 
         if len(self.supports) == 1:
@@ -198,7 +198,7 @@ class BoundaryConditions:
 
             if not dimensions_is_valid:
                 validations.append(
-                    'O projeto deve ter no minímo um suporte fixo com dimensões, ou dois ou mais suportes fixos')
+                    'O projeto deve ter no mínimo um suporte fixo com dimensões, ou dois ou mais suportes fixos')
                 return
 
         elif len(self.supports) == 2:
@@ -220,7 +220,7 @@ class BoundaryConditions:
     def validate_forces(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.forces) < 1:
-            validations.append('O projeto deve ter no minímo uma carga')
+            validations.append('O projeto deve ter no mínimo uma carga')
             return
 
         for force in self.forces:
