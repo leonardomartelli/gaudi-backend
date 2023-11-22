@@ -173,8 +173,8 @@ class Optimization:
 
         self.problem = ComplianceProblem(CustomBoundaryConditions(self.project.domain.dimensions.width,  self.project.domain.dimensions.height, self.project.boundary_conditions),
                                          self.project.penalization,
-                                         self.project.domain.material_properties.density,
-                                         self.project.domain.material_properties.elasticity)
+                                         self.project.domain.material_properties.young,
+                                         self.project.domain.material_properties.poisson)
 
         self.gui = GaudiMockedGUI(self.problem, None)
 
@@ -192,7 +192,7 @@ class Optimization:
     def optimize(self):
         x = numpy.full(shape=self.project.domain.dimensions.width *
                        self.project.domain.dimensions.height,
-                       fill_value=self.project.domain.material_properties.density,
+                       fill_value=1,
                        dtype=float)
 
         self.solver.optimize(x)

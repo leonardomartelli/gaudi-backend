@@ -220,7 +220,7 @@ class BoundaryConditions:
     def validate_forces(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.forces) < 1:
-            validations.append('O projeto deve ter no mínimo uma carga')
+            validations.append('O projeto deve ter no mínimo uma força')
             return
 
         for force in self.forces:
@@ -233,24 +233,24 @@ class BoundaryConditions:
 
 
 class MaterialProperties:
-    elasticity: float
-    density: float
+    poisson: float
+    young: float
 
-    def __init__(self, elasticity: float, density: float) -> None:
-        self.elasticity = elasticity
-        self.density = density
+    def __init__(self, poisson: float, young: float) -> None:
+        self.poisson = poisson
+        self.young = young
 
     def from_json(json: dict):
-        return MaterialProperties(json['elasticity'], json['density'])
+        return MaterialProperties(json['poisson'], json['young'])
 
     def validate(self, validations: List[str]):
-        if self.elasticity >= 1:
+        if self.poisson == 0:
             validations.append(
-                'A elasticidade do material deve ser menor que 1')
+                'O coeficiente de Poisson do material deve ser diferente de 0')
 
-        if self.density > 1:
+        if self.young <= 0:
             validations.append(
-                'A densidade do material deve ser menor ou igual a 1')
+                'O módulo de Young do material deve ser maior que 0')
 
 
 class Domain:
@@ -307,9 +307,9 @@ class Project:
             validations.append(
                 'A penalização deve ser maior que 1')
 
-        if self.filter_radius <= 1:
+        if self.filter_radius <= 0:
             validations.append(
-                'O raio de filtragem deve ser maior que 1')
+                'O raio de filtragem deve ser maior que 0')
 
         self.domain.validate(validations)
 

@@ -1,8 +1,8 @@
 {
   "domain": {
     "materialProperties": {
-      "elasticity": 0.3,
-      "density": 1
+      "poisson": 0.3,
+      "young": 1
     },
     "dimensions": {
       "width": 120,
