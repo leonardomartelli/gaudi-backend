@@ -1,7 +1,7 @@
 matplotlib
 numpy
 scipy
-nlopt == 2.4.2.post2
+nlopt
 cvxopt
 flask
 flask-jsonpify
