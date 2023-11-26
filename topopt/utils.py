@@ -9,7 +9,6 @@ import numpy
 import scipy
 import scipy.sparse
 import scipy.io
-from matplotlib import colors
 
 
 def xy_to_id(x: int, y: int, nelx: int, nely: int, order: str = "F") -> int:
@@ -122,25 +121,6 @@ def squared_euclidean(x: numpy.ndarray) -> float:
 
     """
     return x.T.dot(x)
-
-
-def load_colormap(filename: str) -> colors.Colormap:
-    """
-    Load a color map from a file.
-
-    Parameters
-    ----------
-    filename:
-        Filename of the colormap.
-
-    Returns
-    -------
-        Colormap loaded from the file.
-
-    """
-    C = scipy.io.loadmat(os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), filename))["C"]
-    return colors.ListedColormap(C / 255.0)
 
 
 def camel_case_to_spaces(s: str) -> str:
