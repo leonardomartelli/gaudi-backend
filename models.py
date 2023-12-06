@@ -37,6 +37,8 @@ class CustomBoundaryConditions(bc):
 
                     if support.type == SupportType.FIXED:
                         ids = [ids, ids + 1]
+                    else:
+                        ids += support.direction
 
                     if supp_points is not None:
                         supp_points = numpy.union1d(supp_points, ids)
@@ -45,12 +47,12 @@ class CustomBoundaryConditions(bc):
 
             else:
                 index = 2 * xy_to_id(support.position.x - 1,
-                                     support.position.y - 1, self.nelx, self.nely) + 1
+                                     support.position.y - 1, self.nelx, self.nely)
 
                 if support.type == SupportType.FIXED:
                     supp_points = [index, index + 1]
                 else:
-                    supp_points = [index]
+                    supp_points = [index + support.direction]
 
             if fixed is not None:
                 fixed = numpy.union1d(fixed, supp_points)
