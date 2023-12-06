@@ -22,7 +22,8 @@
           "width": 1,
           "height": 40
         },
-        "id": 0
+        "id": 0,
+        "direction": 0
       },
       {
         "position": {
@@ -30,7 +31,8 @@
           "y": 40
         },
         "type": 0,
-        "id": 1
+        "id": 1,
+        "direction": 1
       }
     ],
     "forces": [

@@ -120,14 +120,18 @@ class Support:
     position: Position
     type: SupportType
     dimensions: Optional[Dimensions]
+    direction: int
 
-    def __init__(self, position: Position, type: SupportType, dimensions: Optional[Dimensions] = None) -> None:
+    def __init__(self, position: Position, type: SupportType, direction: int, dimensions: Optional[Dimensions] = None) -> None:
         self.position = position
         self.type = type
         self.dimensions = dimensions
+        self.direction = direction
 
     def from_json(json: dict):
         position = Position.from_json(json['position'])
+
+        direction = json['direction']
 
         if 'dimensions' in json:
             dimensions = Dimensions.from_json(json['dimensions'])
@@ -136,7 +140,7 @@ class Support:
 
         type = json['type']
 
-        return Support(position, SupportType(type), dimensions)
+        return Support(position, SupportType(type), direction, dimensions)
 
     def validate(self, max_width, max_height, validations: List[str]):
         if not self.position.is_valid(max_width, max_height):
@@ -145,6 +149,9 @@ class Support:
 
         if not (self.type == SupportType.MOBILE or self.type == SupportType.FIXED):
             validations.append('Suporte com tipo inválido')
+
+        if not (self.direction == 1 or self.direction == 0):
+            validations.append('Suporte com direção inválida')
 
 
 class BoundaryConditions:
@@ -200,19 +207,6 @@ class BoundaryConditions:
                 validations.append(
                     'O projeto deve ter no mínimo um suporte fixo com dimensões, ou dois ou mais suportes fixos')
                 return
-
-        elif len(self.supports) == 2:
-            support_one = self.supports[0]
-            support_two = self.supports[1]
-
-            if support_one.type != support_two.type:
-                support_one_dimension_is_valid = support_one.dimensions is not None and support_one.dimensions.is_valid()
-                support_two_dimension_is_valid = support_two.dimensions is not None and support_two.dimensions.is_valid()
-
-                if not (support_one_dimension_is_valid or support_two_dimension_is_valid):
-                    validations.append(
-                        'O projeto não deve ter dois suportes de tipos diferentes, sem dimensões')
-                    return
 
         for support in self.supports:
             support.validate(dimensions.width, dimensions.height, validations)
