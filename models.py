@@ -46,8 +46,8 @@ class CustomBoundaryConditions(bc):
                         supp_points = ids
 
             else:
-                index = 2 * xy_to_id(support.position.x - 1,
-                                     support.position.y - 1, self.nelx, self.nely)
+                index = 2 * (xy_to_id(support.position.x,
+                                      support.position.y, self.nelx, self.nely) - 1)
 
                 if support.type == SupportType.FIXED:
                     supp_points = [index, index + 1]
