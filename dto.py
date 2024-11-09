@@ -69,14 +69,14 @@ class ConstantRegion:
     def validate(self, max_width, max_height, validations: List[str]):
         if not self.dimensions.is_valid():
             validations.append(
-                f'Região constante com dimensão inválida: Largura = {self.dimensions.width} Altura = {self.dimensions.height}')
+                f'Constant region with invalid dimension: Width = {self.dimensions.width} Height = {self.dimensions.height}')
 
         if not self.position.is_valid(max_width, max_height):
             validations.append(
-                f'Região constante com posição inválida: X = {self.position.x} Y = {self.position.y}')
+                f'Constant region with invalid position: X = {self.position.x} Y = {self.position.y}')
 
         if not (self.type == RegionType.MATERIAL or self.type == RegionType.VOID):
-            validations.append('Região constante com tipo inválido')
+            validations.append('Constant region with invalid type')
 
 
 class Force:
@@ -106,14 +106,14 @@ class Force:
 
     def validate(self, max_width, max_height, validations: List[str]):
         if self.load == 0:
-            validations.append('Força com carga igual a zero')
+            validations.append('Force with zero load')
 
         if not self.position.is_valid(max_width, max_height):
             validations.append(
-                f'Força com posição inválida: X = {self.position.x} Y = {self.position.y}')
+                f'Force with invalid position: X = {self.position.x} Y = {self.position.y}')
 
         if not (self.orientation == 0 or self.orientation == 1):
-            validations.append('Força com orientação inválida')
+            validations.append('Force with invalid orientation')
 
 
 class Support:
@@ -145,13 +145,13 @@ class Support:
     def validate(self, max_width, max_height, validations: List[str]):
         if not self.position.is_valid(max_width, max_height):
             validations.append(
-                f'Suporte com posição inválida: X = {self.position.x} Y = {self.position.y}')
+                f'Support with invalid position: X = {self.position.x} Y = {self.position.y}')
 
         if not (self.type == SupportType.MOBILE or self.type == SupportType.FIXED):
-            validations.append('Suporte com tipo inválido')
+            validations.append('Support with invalid type')
 
         if not (self.direction == 1 or self.direction == 0):
-            validations.append('Suporte com direção inválida')
+            validations.append('Support with invalid direction')
 
 
 class BoundaryConditions:
@@ -190,13 +190,13 @@ class BoundaryConditions:
     def validate_supports(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.supports) < 1:
-            validations.append('O projeto deve ter no mínimo um suporte')
+            validations.append('Project must have one support at minimum')
             return
 
         if all([support.type == SupportType.MOBILE for support in self.supports]) and \
                 all([support.dimensions is None or not support.dimensions.is_valid() for support in self.supports]):
             validations.append(
-                'O projeto deve ter no mínimo um suporte móvel com dimensões')
+                'Project must have mobile support in every direction')
             return
 
         if len(self.supports) == 1:
@@ -205,7 +205,7 @@ class BoundaryConditions:
 
             if not dimensions_is_valid:
                 validations.append(
-                    'O projeto deve ter no mínimo um suporte fixo com dimensões, ou dois ou mais suportes fixos')
+                    'Project must have one fixed support with dimensions, or two or more fixed supports')
                 return
 
         for support in self.supports:
@@ -214,7 +214,7 @@ class BoundaryConditions:
     def validate_forces(self, dimensions: Dimensions, validations: List[str]):
 
         if len(self.forces) < 1:
-            validations.append('O projeto deve ter no mínimo uma força')
+            validations.append('Project must have one force at minimum')
             return
 
         for force in self.forces:
@@ -240,11 +240,11 @@ class MaterialProperties:
     def validate(self, validations: List[str]):
         if self.poisson == 0:
             validations.append(
-                'O coeficiente de Poisson do material deve ser diferente de 0')
+                'Poisson coeficient must be different than 0')
 
         if self.young <= 0:
             validations.append(
-                'O módulo de Young do material deve ser maior que 0')
+                'Young modulus must be greater than 0')
 
 
 class Domain:
@@ -269,11 +269,11 @@ class Domain:
 
         if self.volume_fraction <= 0:
             validations.append(
-                'A fração de volume deve ser maior que zero')
+                'Volume fraction must be greater than 0')
 
         if not self.dimensions.is_valid():
             validations.append(
-                f'Domínio com dimensão inválida: Largura = {self.dimensions.width} Altura = {self.dimensions.height}')
+                f'Domain with invalid dimensions: Width = {self.dimensions.width} Height = {self.dimensions.height}')
 
 
 class Project:
@@ -299,11 +299,11 @@ class Project:
     def validate(self, validations: List[str]):
         if self.penalization <= 1:
             validations.append(
-                'A penalização deve ser maior que 1')
+                'Penalization must be greater than 1')
 
         if self.filter_radius <= 0:
             validations.append(
-                'O raio de filtragem deve ser maior que 0')
+                'Filter radius must be greater than 0')
 
         self.domain.validate(validations)
 
